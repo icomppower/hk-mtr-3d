@@ -1,6 +1,16 @@
-rel_geom.json
-ways_tags.json
-stations_osm.json
-hk.geojson
-overpass*.txt
+# Terrain + imagery tiles ARE committed: GitHub Pages is static (no backend),
+# so lib/tiles/ must ship with the repo.
+
+# v1 raw OSM/build intermediates (regenerate via v1/process-hk.mjs)
+v1/rel_geom.json
+v1/ways_tags.json
+v1/stations_osm.json
+v1/hk.geojson
+v1/overpass*.txt
+
+# OS / editor cruft
 .DS_Store
+Thumbs.db
+*.log
+node_modules/
+.vercel
