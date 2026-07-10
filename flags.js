@@ -2,8 +2,8 @@
  *  flags.js — HK MTR: Narrated Terrain Layer · neutral plain-colour swatches.
  *
  *  Neutral-documentary posture: no emblems. Each line flies a flat swatch
- *  matching its official MTR line colour (and the two cross-linked history
- *  layers get their own muted swatches). Same contract as poly2019/kyiv2022
+ *  matching its official MTR line colour (and the cross-linked history
+ *  layer gets its own muted swatch). Same contract as poly2019/kyiv2022
  *  flags.js: export flagTexture(unit) keyed by unit.flag.
  * ===================================================================== */
 const W = 230, H = 150;
@@ -12,7 +12,6 @@ const SWATCH = {
   tkl: "#7D499D", ael: "#00888A", tcl: "#F7943E", tml: "#923011",
   sil: "#B6BD00", drl: "#F173AC",
   hist1941: "#8a7a5c",   // muted sepia — 1941 cross-link layer
-  hist2019: "#6b6f76",   // muted steel — 2019 cross-link layer
 };
 
 const flagTexCache = {};

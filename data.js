@@ -18,12 +18,11 @@
  *  ui.sceneLabel:false (as in poly2019) — the running-time HUD chip is
  *  disabled; each shot's own dateLabel string carries the real date.
  *
- *  Two "history layer" chapters cross-link this project's sibling
- *  documentaries — battle-of-hong-kong-1941 and poly2019 (Siege of PolyU) —
- *  plotting their real events near today's nearest MTR corridor for
- *  orientation. See notes.caveats: this is geographic orientation, not a
- *  claim that the events happened "at" a station (none of these stations
- *  existed yet in 1941 or, for most of the network, in 2019).
+ *  One "history layer" chapter cross-links this project's sibling
+ *  documentary battle-of-hong-kong-1941, plotting its real events near
+ *  today's nearest MTR corridor for orientation. See notes.caveats: this
+ *  is geographic orientation, not a claim that the events happened "at" a
+ *  station (none of these stations existed yet in 1941).
  *
  *  Station/line geometry inherited from v1 (this repo's v1/ — OSM-derived,
  *  Douglas-Peucker simplified, "greedy coverage" branch reconstruction;
@@ -33,7 +32,7 @@
 window.BATTLE_DATA = (function () {
 
   /* ---- factions: one neutral "side" per line (its official colour), plus
-   *  two muted history-layer sides for the 1941/2019 cross-link chapters.
+   *  one muted history-layer side for the 1941 cross-link chapter.
    *  Every faction is role:"neutral" — no side is implied. ---- */
   const LINE_FAC = {
     eal:["東鐵綫","East Rail Line","#53B7E8"], ktl:["觀塘綫","Kwun Tong Line","#00AB4E"],
@@ -53,8 +52,6 @@ window.BATTLE_DATA = (function () {
   }
   factions.hist1941={ main:0x8a7a5c, glow:0xb8a880, dim:0x4a4030, css:"#8a7a5c",
     name_zh:"歷史圖層 · 1941", name_en:"History layer · 1941", role:"neutral", maxStrength:1, defaultFlag:"hist1941" };
-  factions.hist2019={ main:0x6b6f76, glow:0x9aa0a8, dim:0x3a3d42, css:"#6b6f76",
-    name_zh:"歷史圖層 · 2019", name_en:"History layer · 2019", role:"neutral", maxStrength:1, defaultFlag:"hist2019" };
 
   /* Whole-territory box, zoom 13 (== battle-of-hong-kong-1941's tiles, reused verbatim —
    * the MTR network fits entirely inside it). Day axis 1910 (KCR opens) .. 2026 (present). */
@@ -75,17 +72,16 @@ window.BATTLE_DATA = (function () {
   };
 
   /* plain colour-swatch legend (no emblems). The 10 line colours already appear once via
-   * geography.lines below (director.js's #key panel) — only the two history layers need a
-   * separate row here, since they have no route polyline of their own. */
+   * geography.lines below (director.js's #key panel) — only the history layer needs a
+   * separate row here, since it has no route polyline of its own. */
   const flagLegend = [
     { flag:"hist1941", zh:"歷史圖層 · 1941", en:"History layer · 1941", faction:"hist1941" },
-    { flag:"hist2019", zh:"歷史圖層 · 2019", en:"History layer · 2019", faction:"hist2019" },
   ];
 
   const intro = {
     title_zh:"港鐵立體路網", title_en:"HK MTR — Narrated Terrain Layer",
-    sub_zh:"1910年至今 · 香港鐵路網絡的成長，疊映於真實地形之上，並與《香港保衛戰 1941》《理大圍城 2019》兩部姊妹紀錄互相參照。",
-    sub_en:"1910 to present · the growth of Hong Kong's rail network, told over real terrain, cross-linked with two sibling documentaries: The Battle of Hong Kong (1941) and The Siege of PolyU (2019).",
+    sub_zh:"1910年至今 · 香港鐵路網絡的成長，疊映於真實地形之上，並與姊妹紀錄《香港保衛戰 1941》互相參照。",
+    sub_en:"1910 to present · the growth of Hong Kong's rail network, told over real terrain, cross-linked with the sibling documentary The Battle of Hong Kong (1941).",
     cam: { lng:114.15, lat:22.35, dist:2600, az:15, el:50, orbit:0.4 },
   };
   const outro = {
@@ -274,15 +270,6 @@ window.BATTLE_DATA = (function () {
   for(const [id,lng,lat,zh,en] of H41) units.push({ id, faction:"hist1941", kind:"command", flag:"hist1941", cf:false,
     name_zh:zh, name_en:en, track:[ {d:1941.0,lng,lat,s:0,st:"hold"}, {d:1941.95,lng,lat,s:0,st:"hold"} ] });
 
-  const H19 = [   // Siege of PolyU, Nov 2019 — cross-linked from poly2019/2019poly/data.js (all cluster at Hung Hom)
-    ["h19_occupy",114.1798,22.3042,"佔領校園","Campus occupied"],
-    ["h19_tunnel",114.1787,22.3021,"紅隧封閉","Cross-Harbour Tunnel closed"],
-    ["h19_standoff",114.1793,22.3038,"對峙與斡旋","Standoff and mediation"],
-    ["h19_end",114.1795,22.3044,"圍城終結","Siege ends"],
-  ];
-  for(const [id,lng,lat,zh,en] of H19) units.push({ id, faction:"hist2019", kind:"command", flag:"hist2019", cf:false,
-    name_zh:zh, name_en:en, track:[ {d:2019.0,lng,lat,s:0,st:"hold"}, {d:2019.95,lng,lat,s:0,st:"hold"} ] });
-
   /* ---- arrows: two one-shot "first crossing" pulses (the cross-harbour tunnel highlight) ---- */
   const arrows = [
     { f:"twl", from:[114.17221,22.29718], to:[114.16552,22.27863], d:1982, kind:"march", label:"Rail's first harbour crossing" },
@@ -366,13 +353,6 @@ window.BATTLE_DATA = (function () {
       narration_en:"The South Island Line opens, bringing Ocean Park, Wong Chuk Hang, and South Horizons onto the rail network for the first time.",
       focus:["train_sil"] },
 
-    { day:2019, hold:11,
-      cam:{ lng:114.181, lat:22.303, dist:1100, az:0, el:42, orbit:0.5 },
-      dateLabel:"2019年11月", title_zh:"歷史圖層 · 理大圍城", title_en:"History Layer · The Siege of PolyU",
-      narration_zh:"再一次跳出鐵路史：2019年11月，紅磡（東鐵綫／屯馬綫轉車站）旁的理工大學校園被佔據及封鎖十多日，紅磡海底隧道因而癱瘓。以下取自姊妹紀錄《理大圍城 2019》，同樣為地理參照，非精確重現。",
-      narration_en:"Another pause: in November 2019, the PolyU campus next to Hung Hom station (today's East Rail/Tuen Ma interchange) was occupied and cordoned for over a week, paralysing the adjacent Cross-Harbour Tunnel. These points are drawn from the sibling documentary The Siege of PolyU 2019 — again, orientation only, not a precise reconstruction.",
-      focus:["h19_occupy","h19_tunnel","h19_standoff","h19_end"] },
-
     { day:2021, hold:11,
       cam:{ lng:114.19, lat:22.325, dist:1900, az:-10, el:42, orbit:0.6 },
       dateLabel:"2021年", title_zh:"屯馬綫全綫通車", title_en:"Tuen Ma Line Fully Opens",
@@ -390,15 +370,15 @@ window.BATTLE_DATA = (function () {
 
   /* ---- notes (required; sources non-empty) -------------------------- */
   const notes = {
-    summary:"港鐵立體路網——1910年至今香港鐵路網絡發展的紀錄重建，疊映於真實地形之上，並與兩部姊妹紀錄互相參照：《香港保衛戰 1941》與《理大圍城 2019》。 · HK MTR — Narrated Terrain Layer: a documentary reconstruction of Hong Kong's rail network, 1910 to present, over real terrain, cross-linked with two sibling documentaries: The Battle of Hong Kong (1941) and The Siege of PolyU (2019).",
+    summary:"港鐵立體路網——1910年至今香港鐵路網絡發展的紀錄重建，疊映於真實地形之上，並與姊妹紀錄《香港保衛戰 1941》互相參照。 · HK MTR — Narrated Terrain Layer: a documentary reconstruction of Hong Kong's rail network, 1910 to present, over real terrain, cross-linked with the sibling documentary The Battle of Hong Kong (1941).",
     caveats:[
       "每條綫僅標示一個代表性「通車年份」（網絡發展的關鍵時刻），並非逐站／逐階段的精確開通年表。例如：東鐵綫標示為1910年（九廣鐵路英段），但其現有路綫包含2022年才通車的過海段（會展至金鐘）；屯馬綫標示為2021年（全綫貫通），但其西鐵（2003）與馬鞍山鐵路（2004）路段更早通車。 · Each line is dated to a single representative \"opening year\" (a network-defining milestone), not a station-by-station or phase-by-phase chronology. E.g. East Rail Line is dated 1910 (the KCR British Section) though its present alignment includes a harbour-crossing section that only opened in 2022; Tuen Ma Line is dated 2021 (full through-running) though its West Rail (2003) and Ma On Shan Rail (2004) sections opened earlier.",
       "車站與路綫幾何繼承自本專案v1（OSM資料，經Douglas-Peucker簡化與「貪婪覆蓋」分支重建演算法處理），路徑細節為近似值，非測量級精度；車站高度為OSM隧道/橋樑標籤的風格化編碼，非實測海拔。詳見 v1/README.md。 · Station and line geometry is inherited from this project's v1 (OSM-derived, Douglas-Peucker simplified, reconstructed via a \"greedy coverage\" branch-stitching heuristic) — approximate, not survey-grade; station heights are stylized OSM tunnel/bridge codes, not measured elevation. See v1/README.md.",
-      "「歷史圖層」（1941、2019）的座標取自兩部姊妹紀錄，僅按地理位置就近標示於今日鐵路走廊，供方位參照；當年（尤其1941年）港鐵車站尚未存在，標示不代表事件發生於車站本身。兩部姊妹紀錄各自的完整考據與來源，請參閱其專案的說明面板。 · The \"history layer\" (1941, 2019) coordinates come from two sibling documentaries and are plotted near today's rail corridor purely for geographic orientation; in 1941 especially, none of these MTR stations existed yet, so proximity to a station is not a claim the event happened there. Full sourcing for each cross-linked event lives in that sibling project's own Notes panel.",
+      "「歷史圖層」（1941）的座標取自姊妹紀錄，僅按地理位置就近標示於今日鐵路走廊，供方位參照；當年港鐵車站尚未存在，標示不代表事件發生於車站本身。完整考據與來源請參閱該專案的說明面板。 · The \"history layer\" (1941) coordinates come from the sibling documentary and are plotted near today's rail corridor purely for geographic orientation; none of these MTR stations existed yet in 1941, so proximity to a station is not a claim the event happened there. Full sourcing for each cross-linked event lives in that sibling project's own Notes panel.",
       "中立紀錄，不持立場：每條綫以其官方色彩作純色標示，不隱含任何評價。 · Neutral documentary posture: each line is shown in its own official colour with no implied judgment.",
       "衛星影像與地形為現況（非各年份之歷史地貌）；地形起伏依真實SRTM高程自動推算，未人為壓平。 · Imagery and terrain reflect present-day conditions (not each shown year's historical landscape); relief is auto-derived from real SRTM elevation, not artificially flattened.",
     ],
-    sources:"路綫與通車年份綜合自港鐵公司（MTR Corporation）官方歷史資料、維基百科各綫條目、香港政府憲報及新聞公報；路軌與車站幾何來自OpenStreetMap貢獻者（© OpenStreetMap contributors, ODbL）。「歷史圖層」引用自本專案的姊妹作品 battle-of-hong-kong-1941（香港保衛戰1941，來源見該專案notes面板）與 poly2019（理大圍城2019，來源綜合自路透社、美聯社、BBC、香港自由新聞、南華早報等，詳見該專案notes面板）。地形：AWS Terrarium DEM（SRTM/USGS）；影像：EOX Sentinel-2 cloudless 2016（CC BY 4.0）。 · Line/opening-year facts drawn from MTR Corporation's official history, Wikipedia's line articles, and Hong Kong Government Gazette/press releases; track and station geometry from OpenStreetMap contributors (© OpenStreetMap contributors, ODbL). The history layer cites this project's siblings, battle-of-hong-kong-1941 and poly2019 — see each project's own Notes panel for full sourcing. Elevation: AWS Terrarium DEM (SRTM/USGS). Imagery: EOX Sentinel-2 cloudless 2016 (CC BY 4.0).",
+    sources:"路綫與通車年份綜合自港鐵公司（MTR Corporation）官方歷史資料、維基百科各綫條目、香港政府憲報及新聞公報；路軌與車站幾何來自OpenStreetMap貢獻者（© OpenStreetMap contributors, ODbL）。「歷史圖層」引用自本專案的姊妹作品 battle-of-hong-kong-1941（香港保衛戰1941，來源見該專案notes面板）。地形：AWS Terrarium DEM（SRTM/USGS）；影像：EOX Sentinel-2 cloudless 2016（CC BY 4.0）。 · Line/opening-year facts drawn from MTR Corporation's official history, Wikipedia's line articles, and Hong Kong Government Gazette/press releases; track and station geometry from OpenStreetMap contributors (© OpenStreetMap contributors, ODbL). The history layer cites this project's sibling, battle-of-hong-kong-1941 — see its own Notes panel for full sourcing. Elevation: AWS Terrarium DEM (SRTM/USGS). Imagery: EOX Sentinel-2 cloudless 2016 (CC BY 4.0).",
   };
 
   return { meta, ui, factions, intro, outro, flagLegend, geography, units, arrows,
