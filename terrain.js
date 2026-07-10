@@ -156,7 +156,9 @@ function lineLabel(zh,en,color){ const d=document.createElement("div"); d.classN
   d.innerHTML=`<div class="zh" style="color:${color}">${zh}</div>`+(sameLang(zh,en)?"":`<div class="en">${en}</div>`);
   const o=new THREE.CSS2DObject(d); labelGroup.add(o); return {o,div:d}; }
 
-// one {mesh,label,fade} per defensive line declared in D.geography.lines; empty if the battle has no named line.
+// one {mesh,label,fade,curve,color} per defensive line declared in D.geography.lines; empty if the battle has
+// no named line. `curve` + `color` are exposed so a fork can run its own decoration along the same geometry
+// (this fork's entities.js reuses it for live trains) without rebuilding the Catmull-Rom curve a second time.
 export let lineObjs=[];
 export function buildLine(){
   (D.geography.lines||[]).forEach(line=>{
@@ -166,7 +168,7 @@ export function buildLine(){
     scene.add(mesh);
     const label=lineLabel(line.name_zh, line.name_en, line.color);
     const m=curve.getPoint(0.5); label.o.position.set(m.x, m.y+CFG.LBL_FORT, m.z);
-    lineObjs.push({ mesh, label, fade:line.fade });
+    lineObjs.push({ mesh, label, fade:line.fade, curve, color:line.color });
   });
 }
 // Each line carries its own optional fade window {in,out,span} in data: opacity ramps 0→0.6 over `span` after

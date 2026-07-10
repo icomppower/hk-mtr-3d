@@ -12,7 +12,7 @@ import { scene, controls, skyMat, sun, hemi, amb, renderer } from "./core.js";
 import { vec, project } from "./projection.js";
 import { flagTexture } from "./flags.js";
 import { Time, focusSet } from "./state.js";
-import { seaMesh } from "./terrain.js";
+import { seaMesh, lineObjs } from "./terrain.js";
 
 /* ========================= UNITS / FLAGS ========================== */
 const unitsGroup=new THREE.Group(); scene.add(unitsGroup);
@@ -126,6 +126,39 @@ export function buildArrow(a){
   const lbl=new THREE.CSS2DObject(div); lbl.position.copy(mid); div.style.opacity="0";
   arrowsGroup.add(tube); arrowsGroup.add(head); arrowsGroup.add(lbl);
   arrowObjs.push({a,curve,tube,head,flows,div,lbl});
+}
+
+/* ===================== LIVE TRAINS (this fork only) =============== *
+ *  A couple of small tokens shuttle back and forth along each line's own
+ *  curve (reused from terrain.js's lineObjs, not rebuilt) driven by the
+ *  real frame clock (Time.now) — independent of the Director's year axis,
+ *  so the network reads as "running" the way v1's animated trains did.
+ *  Visible only once that line has faded in (its lineObj mesh is opaque).
+ * ===================================================================== */
+const TRAIN_SPEED=22, TRAINS_PER_LINE=2;   // world units/second (curve arc-length space); 2 shuttles per line/branch
+export const trainObjs=[];
+export function buildTrains(){
+  for(const L of lineObjs){
+    const period=Math.max(L.curve.getLength()/TRAIN_SPEED, 8);   // one-way traverse time; floored so a short branch still reads as moving
+    for(let i=0;i<TRAINS_PER_LINE;i++){
+      const mesh=new THREE.Mesh(new THREE.BoxGeometry(16,7,6),
+        new THREE.MeshStandardMaterial({color:L.color, emissive:L.color, emissiveIntensity:0.35, roughness:0.5}));
+      mesh.castShadow=true; mesh.visible=false; scene.add(mesh);
+      trainObjs.push({ L, mesh, period, phase:(i/TRAINS_PER_LINE)*period*2 });
+    }
+  }
+}
+const AXIS_X=new THREE.Vector3(1,0,0);
+export function updateTrains(){
+  for(const T of trainObjs){
+    const visible=T.L.mesh.visible && T.L.mesh.material.opacity>0.3;   // only once the line has actually opened (faded in)
+    T.mesh.visible=visible;
+    if(!visible) continue;
+    const tt=((Time.now+T.phase)%(T.period*2))/T.period, u=clamp(tt<1?tt:2-tt,0,1);   // 0..2 triangle wave → back-and-forth shuttle, no teleport at the ends
+    const tan=T.L.curve.getTangentAt(u).normalize(); if(tt>1) tan.negate();   // face the direction actually being travelled on the return leg
+    T.mesh.position.copy(T.L.curve.getPointAt(u)); T.mesh.position.y+=4;     // small hover above the rail tube
+    T.mesh.quaternion.setFromUnitVectors(AXIS_X,tan);
+  }
 }
 
 /* ========================= EFFECTS ================================ */
